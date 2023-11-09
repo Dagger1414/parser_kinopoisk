@@ -1,36 +1,30 @@
-"""Модуль с классом запроса на API"""
-import json
-import requests
-
+# Класс для выполнения запроса к API сайта
 from typing import Any
 
-from parser_kinopoisk.settings.config import Settings
+import requests
 
 
 class RequestToAPI:
-    """Класс запроса к API"""
+    def __call__(self,
+                 url: str = "",
+                 headers: Any = None,
+                 params: Any = None
+                 ) -> tuple[int, requests.Response.json]:
+        """
+        Магический метод для вызова класса как функции
+        :param args: кортеж параметров (url, params, headers)
+        :return: статус-код ответа API сайта, тело ответа API сайта
+        """
 
-    def __init__(
-            self,
-            endpoint: str = "",
-            api_key: str = Settings.api_key
-    ) -> None:
-        self.url = Settings.api_url + endpoint
-        self.__api_key = api_key
+        self.url = url
+        self.headers = headers
+        self.params = params
 
-    def __call__(self, *args: Any, **kwds: Any) -> requests.Response():
-
-        response = requests.get(url=self.url, headers={"X-API-KEY": self.__api_key})
-        return response
-
-
-if __name__ == "__main__":
-
-    endpoint = "/v1/movie/random"
-    response = RequestToAPI(endpoint=endpoint)
-    json_body = response().json()
-    prep = json.dumps(json_body, ensure_ascii=False, indent=4)
-
-    with open("random_movie.json", "w", encoding='utf-8') as file:
-        file.write(prep)
+        response = requests.request(
+            "GET",
+            url=self.url,
+            params=self.params,
+            headers=self.headers
+        )
+        return response.status_code, response.json()
 
