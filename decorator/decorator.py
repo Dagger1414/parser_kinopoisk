@@ -1,8 +1,10 @@
 from settings.config import Settings
 
 
-# Класс-декоратор для оборачивания класса и передачи ему строки запроса
 class QueryConstructor:
+    """
+    Класс-декоратор для оборачивания класса и передачи ему строки запроса
+    """
     __config = Settings
     __base_url = __config.api_url
     __api_key = __config.api_key
@@ -22,8 +24,6 @@ class QueryConstructor:
         if headers is None:
             headers = {"X-API-KEY": self.__api_key}
             self.headers = headers
-        else:
-            raise ValueError("Expected APIKEY")
 
     def __call__(self, cls):
         """
